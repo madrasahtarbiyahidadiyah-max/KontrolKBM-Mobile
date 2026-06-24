@@ -1,4 +1,4 @@
-name: Android CI (Ultra God Mode)
+name: Android CI (Ultimate Exodia)
 
 on:
   push:
@@ -22,12 +22,12 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-- name: 3. Siapkan Gradle (Versi Stabil)
+    - name: 3. Siapkan Gradle (Versi Stabil 8.7)
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: '8.7' # <-- KITA KUNCI PAKSA DI SINI, JANGAN 'current'
+        gradle-version: '8.7' # <-- Obat penawar error detik ke-20
 
-    - name: 4. Rakit APK (Anti KSP Crash)
+    - name: 4. Rakit APK (Kombinasi Pamungkas)
       env:
         JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
       run: |
