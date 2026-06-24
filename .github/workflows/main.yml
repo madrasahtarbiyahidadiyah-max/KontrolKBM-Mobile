@@ -22,10 +22,10 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: 3. Siapkan Gradle Darurat
+- name: 3. Siapkan Gradle (Versi Stabil)
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: 'current'
+        gradle-version: '8.7' # <-- KITA KUNCI PAKSA DI SINI, JANGAN 'current'
 
     - name: 4. Rakit APK (Anti KSP Crash)
       env:
@@ -33,9 +33,9 @@ jobs:
       run: |
         if [ -f "./gradlew" ]; then
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace -x lint -x test -Pksp.incremental=false -Djava.awt.headless=true
+          ./gradlew assembleDebug --no-daemon --stacktrace -x lint -x test -Pksp.incremental=false -Djava.awt.headless=true --no-configuration-cache
         else
-          gradle assembleDebug --no-daemon --stacktrace -x lint -x test -Pksp.incremental=false -Djava.awt.headless=true
+          gradle assembleDebug --no-daemon --stacktrace -x lint -x test -Pksp.incremental=false -Djava.awt.headless=true --no-configuration-cache
         fi
 
     - name: 5. Ambil File APK-nya
