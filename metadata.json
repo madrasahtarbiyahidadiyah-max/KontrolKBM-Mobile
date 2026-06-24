@@ -1,0 +1,6 @@
+{
+  "name": "Inspeksi KBM",
+  "description": "Aplikasi pengawasan dan kontrol KBM harian harian MMU Idadiyah Sidogiri.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
