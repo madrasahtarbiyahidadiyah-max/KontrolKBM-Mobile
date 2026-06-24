@@ -1,4 +1,4 @@
-name: Android CI (Pawang Error Otomatis)
+name: Android CI (Angka Keramat)
 
 on:
   push:
@@ -15,32 +15,26 @@ jobs:
     - name: 1. Ambil Kodingan
       uses: actions/checkout@v4
 
-    - name: 2. Intip Jodoh Aslinya
+    - name: 2. Pasang Pelindung Anti-Crash (Env & Firebase)
       run: |
-        if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
-          cat gradle/wrapper/gradle-wrapper.properties
-        fi
-
-    - name: 3. Pasang File Tiruan (Anti-Crash Env & Firebase)
-      run: |
-        # Mengantisipasi jika kodingan Anda mencari file .env
         touch .env
         echo "BASE_URL=https://dummy.com" > .env
         
-        # Mengantisipasi jika project Anda memakai Firebase tapi JSON-nya sengaja disembunyikan
         mkdir -p app
         echo '{"project_info":{"project_id":"dummy"},"client":[{"client_info":{"android_client_info":{"package_name":"com.dummy"}},"api_key":[{}]}]}' > app/google-services.json
 
-    - name: 4. Siapkan Mesin Java (JDK 17)
+    - name: 3. Siapkan Mesin Java (JDK 17)
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: 5. Siapkan Gradle (Mode Auto-Pilot)
+    - name: 4. Siapkan Gradle (Angka Keramat 8.10.2)
       uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '8.10.2' # <--- KITA KUNCI MATI DI SINI
 
-    - name: 6. Rakit APK (Kombinasi Pamungkas)
+    - name: 5. Rakit APK (God Mode)
       env:
         JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
       run: |
@@ -51,7 +45,7 @@ jobs:
           gradle assembleDebug --no-daemon --stacktrace -x lint -x test -Pksp.incremental=false --no-configuration-cache
         fi
 
-    - name: 7. Ambil File APK-nya
+    - name: 6. Ambil File APK-nya
       uses: actions/upload-artifact@v4
       with:
         name: Aplikasi-Android-Debug
