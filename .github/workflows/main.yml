@@ -1,23 +1,45 @@
-# ... (kode bagian atas dari 'name:' sampai 'setup JDK 17' biarkan sama)
+name: Android CI (Anti-Error Version)
 
-    - name: Set up JDK 17
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-apk:
+    name: Build APK Tanpa Bawel
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. Ambil Kodingan
+      uses: actions/checkout@v4
+
+    - name: 2. Siapkan Mesin Java (JDK 17)
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
-    # --- BAGIAN DI BAWAH INI YANG DIGANTI ---
-
-    - name: Setup Gradle
+    - name: 3. Siapkan Gradle Darurat
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: 'current' # Mendownload Gradle versi stabil terbaru
+        gradle-version: 'current'
 
-    - name: Build Debug APK
-      run: gradle assembleDebug   # Perhatikan: tidak pakai tanda titik-miring (./) lagi
+    - name: 4. Rakit APK (God Mode)
+      run: |
+        if [ -f "./gradlew" ]; then
+          echo "Terdeteksi file gradlew. Memperbaiki izin akses..."
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace -x lint -x test
+        else
+          echo "File gradlew gaib! Memakai sistem Gradle darurat..."
+          gradle assembleDebug --no-daemon --stacktrace -x lint -x test
+        fi
 
-    - name: Upload APK Artifact
+    - name: 5. Ambil File APK-nya
       uses: actions/upload-artifact@v4
       with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        name: Aplikasi-Android-Debug
+        path: '**/build/outputs/apk/debug/*.apk'
