@@ -15,7 +15,7 @@ jobs:
     - name: 1. Ambil Kodingan
       uses: actions/checkout@v4
 
-    - name: 2. Perbaiki Izin gradlew (Penyebab Asli Error)
+    - name: 2. Perbaiki Izin gradlew
       run: chmod +x gradlew || true
 
     - name: 3. Deteksi Angka Jodoh Otomatis (Robot AI)
@@ -48,10 +48,10 @@ jobs:
         mkdir -p app
         echo '{"project_info":{"project_id":"dummy"},"client":[{"client_info":{"android_client_info":{"package_name":"com.dummy"}},"api_key":[{}]}]}' > app/google-services.json
 
-    - name: 6. Siapkan Mesin Java (JDK 17)
+    - name: 6. Siapkan Mesin Java (JDK 21)
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21' # <--- INI OBATNYA, UPGRADE KE JAVA 21
         distribution: 'temurin'
 
     - name: 7. Rakit APK (God Mode)
