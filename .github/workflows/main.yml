@@ -1,4 +1,4 @@
-name: Android CI (Radar Final)
+name: Android CI (Perekam Kotak Hitam)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-apk:
-    name: Build APK & Tangkap Error
+    name: Build APK & Rekam Log
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,7 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: 3. Pasang Gradle 9.3.1
+    - name: 3. Pasang Gradle 9.3.1 (Kunci Utama)
       uses: gradle/actions/setup-gradle@v4
       with:
         gradle-version: '9.3.1'
@@ -34,24 +34,21 @@ jobs:
         mkdir -p app
         echo '{"project_info":{"project_id":"dummy"},"client":[{"client_info":{"android_client_info":{"package_name":"com.dummy"}},"api_key":[{}]}]}' > app/google-services.json
 
-    - name: 5. Rakit APK & Sedot Error
-      env:
-        JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
+    - name: 5. Rakit APK (Menyimpan seluruh teks ke file rahasia)
       run: |
-        echo "Merakit APK dan mengintai error..."
-        gradle clean assembleDebug --stacktrace -x lint -x test > log.txt 2>&1 || {
-          echo " "
-          echo "========================================================="
-          echo "🚨 KETANGKAP BASAH! INI ERROR ASLINYA: 🚨"
-          echo "========================================================="
-          grep -A 30 -i "What went wrong" log.txt || tail -n 30 log.txt
-          echo "========================================================="
-          echo "TOLONG FOTOKAN AREA KOTAK INI!"
-          exit 1
-        }
+        echo "Memulai perakitan... Jika gagal, log akan disimpan sebagai file Download."
+        gradle clean assembleDebug --stacktrace -x lint -x test > eksekusi_log.txt 2>&1
 
-    - name: 6. Simpan File APK-nya
+    - name: 6. Simpan File APK-nya (Jika Sukses)
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: Aplikasi-Android-Debug
         path: '**/build/outputs/apk/debug/*.apk'
+
+    - name: 7. KUMPULKAN BUKTI ERROR (Hanya Jika Gagal)
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: BUKTI-ERROR-LENGKAP
+        path: eksekusi_log.txt
