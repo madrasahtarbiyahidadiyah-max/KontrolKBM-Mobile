@@ -67,10 +67,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val catatan: StateFlow<String> = _catatan.asStateFlow()
 
     // Config: Apps Script Web App URL
-    private val defaultUrl = "https://script.google.com/macros/s/AKfycbw548QtPjt9D-xFwipoVbQP6bxOwQhTNnTyBHYNElet9DKkDQgym-lcfg0M4M8ZRoc-/exec"
+    private val defaultUrl = "https://script.google.com/macros/s/AKfycby5nTQ6tbpI-JQYSRwNBxpFdxSCjQ_f90FX9qqGEjRSQD_ka0rrUC8DQLPBPxSUE_gL/exec"
+    private val oldDefaultUrl = "https://script.google.com/macros/s/AKfycbw548QtPjt9D-xFwipoVbQP6bxOwQhTNnTyBHYNElet9DKkDQgym-lcfg0M4M8ZRoc-/exec"
     private val _googleSheetUrl = MutableStateFlow(
         sharedPrefs.getString("sheet_url", null)?.let { saved ->
-            if (saved.contains("docs.google.com/spreadsheets") || saved.isBlank()) {
+            if (saved.contains("docs.google.com/spreadsheets") || saved.isBlank() || saved == oldDefaultUrl) {
                 sharedPrefs.edit().putString("sheet_url", defaultUrl).apply()
                 defaultUrl
             } else {
