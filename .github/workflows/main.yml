@@ -1,4 +1,4 @@
-name: Android CI (Final Sempurna)
+name: Android CI (Radar Final)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-apk:
-    name: Build APK Sukses
+    name: Build APK & Tangkap Error
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +26,7 @@ jobs:
       with:
         gradle-version: '9.3.1'
 
-    - name: 4. Buat File Pelindung (Anti-Crash)
+    - name: 4. Buat File Pelindung
       run: |
         echo "BASE_URL=https://dummy.com" > .env
         echo "API_KEY=123456789" >> .env
@@ -34,12 +34,21 @@ jobs:
         mkdir -p app
         echo '{"project_info":{"project_id":"dummy"},"client":[{"client_info":{"android_client_info":{"package_name":"com.dummy"}},"api_key":[{}]}]}' > app/google-services.json
 
-    - name: 5. Rakit APK (Pawang KSP Aktif)
+    - name: 5. Rakit APK & Sedot Error
       env:
         JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
       run: |
-        # Kita kembalikan senjata --no-daemon dan -Pksp.incremental=false ke sini!
-        gradle clean assembleDebug --no-daemon --stacktrace -x lint -x test -Pksp.incremental=false
+        echo "Merakit APK dan mengintai error..."
+        gradle clean assembleDebug --stacktrace -x lint -x test > log.txt 2>&1 || {
+          echo " "
+          echo "========================================================="
+          echo "🚨 KETANGKAP BASAH! INI ERROR ASLINYA: 🚨"
+          echo "========================================================="
+          grep -A 30 -i "What went wrong" log.txt || tail -n 30 log.txt
+          echo "========================================================="
+          echo "TOLONG FOTOKAN AREA KOTAK INI!"
+          exit 1
+        }
 
     - name: 6. Simpan File APK-nya
       uses: actions/upload-artifact@v4
