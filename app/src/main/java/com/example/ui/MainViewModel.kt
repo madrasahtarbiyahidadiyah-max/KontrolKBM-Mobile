@@ -67,7 +67,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val catatan: StateFlow<String> = _catatan.asStateFlow()
 
     // Config: Apps Script Web App URL
-    private val _googleSheetUrl = MutableStateFlow(sharedPrefs.getString("sheet_url", "") ?: "")
+    private val defaultUrl = "https://script.google.com/macros/s/AKfycbw548QtPjt9D-xFwipoVbQP6bxOwQhTNnTyBHYNElet9DKkDQgym-lcfg0M4M8ZRoc-/exec"
+    private val _googleSheetUrl = MutableStateFlow(
+        sharedPrefs.getString("sheet_url", null)?.let { saved ->
+            if (saved.contains("docs.google.com/spreadsheets") || saved.isBlank()) {
+                sharedPrefs.edit().putString("sheet_url", defaultUrl).apply()
+                defaultUrl
+            } else {
+                saved
+            }
+        } ?: run {
+            sharedPrefs.edit().putString("sheet_url", defaultUrl).apply()
+            defaultUrl
+        }
+    )
     val googleSheetUrl: StateFlow<String> = _googleSheetUrl.asStateFlow()
 
     // Theme preference state: "system", "light", "dark"

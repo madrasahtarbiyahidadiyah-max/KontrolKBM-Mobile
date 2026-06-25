@@ -1307,6 +1307,32 @@ fun SettingsDialog(
                         ),
                         singleLine = true
                     )
+
+                    if (urlInput.contains("docs.google.com/spreadsheets")) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "⚠️",
+                                    fontSize = 16.sp
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Anda memasukkan URL Spreadsheet langsung. Aplikasi ini membutuhkan URL Web App dari Google Apps Script agar dapat mengunggah data. Silakan ikuti panduan di bawah ini.",
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    lineHeight = 14.sp
+                                )
+                            }
+                        }
+                    }
                 }
 
                 // Sync action trigger
