@@ -46,15 +46,50 @@ class InspectionRepository(private val inspectionDao: InspectionDao) {
         if (url.isBlank()) return false
         return withContext(Dispatchers.IO) {
             try {
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US).apply {
+                    timeZone = java.util.TimeZone.getTimeZone("UTC")
+                }
+                val dateStr = sdf.format(java.util.Date(inspection.timestamp))
+                val guruStr = if (inspection.guruAktif) "Aktif" else "Tidak Aktif"
+                val muridStr = if (inspection.muridAktif) "Aktif" else "Tidak Aktif"
+
                 val json = JSONObject().apply {
+                    // 1. Exact Google Sheet Column Headers (Very common for header-mapping dynamic scripts)
+                    put("Timestamp", dateStr)
+                    put("Daerah", inspection.daerah)
+                    put("Kelas", inspection.kelas)
+                    put("Telat (Menit)", inspection.telatMenit)
+                    put("Guru Aktif", guruStr)
+                    put("Murid Aktif", muridStr)
+                    put("Kekondusifan", inspection.kekondusifan)
+                    put("Kerapian", inspection.kerapian)
+                    put("Catatan", inspection.catatan)
+
+                    // 2. Lowercase and standard camelCase/snake_case variants (for hardcoded property matching)
+                    put("timestamp", dateStr)
                     put("daerah", inspection.daerah)
                     put("kelas", inspection.kelas)
+                    
+                    put("telat", inspection.telatMenit)
                     put("telatMenit", inspection.telatMenit)
-                    put("guruAktif", inspection.guruAktif)
-                    put("muridAktif", inspection.muridAktif)
+                    put("telat_menit", inspection.telatMenit)
+                    put("telat (menit)", inspection.telatMenit)
+
+                    put("guruAktif", guruStr)
+                    put("guru_aktif", guruStr)
+                    put("guru", guruStr)
+                    
+                    put("muridAktif", muridStr)
+                    put("murid_aktif", muridStr)
+                    put("murid", muridStr)
+
                     put("kekondusifan", inspection.kekondusifan)
                     put("kerapian", inspection.kerapian)
                     put("catatan", inspection.catatan)
+
+                    // 3. Raw boolean properties just in case
+                    put("guruAktifRaw", inspection.guruAktif)
+                    put("muridAktifRaw", inspection.muridAktif)
                 }
 
                 val mediaType = "application/json; charset=utf-8".toMediaType()
@@ -69,11 +104,8 @@ class InspectionRepository(private val inspectionDao: InspectionDao) {
                     if (response.isSuccessful) {
                         val responseBody = response.body?.string() ?: ""
                         Log.d("InspectionRepository", "Upload successful: $responseBody")
-                        // Many Apps Script JSON responses contain success flags
-                        val success = responseBody.contains("true") || responseBody.contains("sukses") || responseBody.contains("success")
-                        if (success) {
-                            inspectionDao.updateInspectionSyncStatus(inspection.id, true)
-                        }
+                        // Mark as synced locally since the server responded successfully
+                        inspectionDao.updateInspectionSyncStatus(inspection.id, true)
                         true
                     } else {
                         Log.e("InspectionRepository", "Upload failed: ${response.code}")
