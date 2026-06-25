@@ -1,4 +1,4 @@
-name: Android CI (Sapu Jagat)
+name: Android CI (Akhir Penderitaan)
 
 on:
   push:
@@ -8,38 +8,35 @@ on:
 
 jobs:
   build-apk:
-    name: Build APK Tanpa Henti
+    name: Build APK Sukses
     runs-on: ubuntu-latest
 
     steps:
     - name: 1. Tarik Kodingan
       uses: actions/checkout@v4
 
-    - name: 2. Pasang Java 21 (Anti Error Class 65)
+    - name: 2. Pasang Java 21 (Wajib untuk Sistem Modern)
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: 3. Pasang Gradle 8.9 (Paling Stabil Saat Ini)
+    - name: 3. Pasang Gradle 9.3.1 (Sesuai Permintaan Error)
       uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: '8.9'
+        gradle-version: '9.3.1' # <--- INI KUNCI JAWABANNYA!
 
-    - name: 4. Buat File Penting yang Hilang (Obat Anti-Crash)
+    - name: 4. Buat File Pelindung (Anti-Crash)
       run: |
-        # 1. Membuat file .env palsu
         echo "BASE_URL=https://dummy.com" > .env
         echo "API_KEY=123456789" >> .env
-        
-        # 2. Membuat file lokasi Android SDK palsu (Sering bikin crash di detik ke-16)
         echo "sdk.dir=$ANDROID_HOME" > local.properties
-        
-        # 3. Membuat file Firebase palsu
         mkdir -p app
         echo '{"project_info":{"project_id":"dummy"},"client":[{"client_info":{"android_client_info":{"package_name":"com.dummy"}},"api_key":[{}]}]}' > app/google-services.json
 
-    - name: 5. Rakit APK (Terobos Batas)
+    - name: 5. Rakit APK (Langsung Lulus)
+      env:
+        JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
       run: gradle clean assembleDebug --stacktrace -x lint -x test
 
     - name: 6. Simpan File APK-nya
